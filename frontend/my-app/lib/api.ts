@@ -37,6 +37,12 @@ export const api = {
     }
     return res.json();
   },
+  // Add this inside export const api = { ... }
+  getTaskById: async (id: number | string): Promise<TaskData> => {
+    const res = await fetch(`${API_URL}/tasks/${id}`);
+    if (!res.ok) throw new Error('Failed to fetch task');
+    return res.json();
+  },
 
   // Create a new task in MySQL
   createTask: async (task: Partial<TaskData>): Promise<TaskData> => {

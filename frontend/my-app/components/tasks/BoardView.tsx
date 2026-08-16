@@ -18,10 +18,11 @@ export function BoardView({ tasks, onUpdate, visibleFields, onEdit, onDelete }: 
   const [openMenuId, setOpenMenuId] = useState<number | null>(null); 
 
   const columns = [
-    { title: 'To Do', icon: '∷' }, 
-    { title: 'Doing', icon: '∷' }, 
-    { title: 'Completed', icon: '∷' }, 
-    { title: 'On Hold', icon: '∷' }
+    { title: 'Backlog', icon: '∷', dot: 'bg-gray-400' },
+    { title: 'To Do', icon: '∷', dot: 'bg-[#e4e4e7] dark:bg-[#27272a]' }, 
+    { title: 'Doing', icon: '∷', dot: 'bg-primary' }, 
+    { title: 'Completed', icon: '∷', dot: 'bg-emerald-500' }, 
+    { title: 'On Hold', icon: '∷', dot: 'bg-orange-500' }
   ];
 
   return (

@@ -1,10 +1,9 @@
-// backend/src/tasks/tasks.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
 
-@Controller('tasks') // The global prefix makes this /api/tasks automatically
+@Controller('tasks')
 export class TasksController {
   constructor(
     @InjectRepository(Task)
@@ -14,6 +13,16 @@ export class TasksController {
   @Get()
   findAll() {
     return this.tasksRepository.find({ order: { createdAt: 'DESC' } });
+  }
+
+  // 🛑 ADD THIS NEW ROUTE HERE:
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    const task = await this.tasksRepository.findOne({ where: { id } });
+    if (!task) {
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
+    return task;
   }
 
   @Post()

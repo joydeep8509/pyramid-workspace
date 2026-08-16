@@ -6,12 +6,14 @@ import { BoardView } from '@/components/tasks/BoardView';
 import { ListView } from '@/components/tasks/ListView';
 import { TaskModal } from '@/components/tasks/TaskModal';
 import { api, TaskData } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 // Type definition for the dynamic fields toggle
 export type VisibleFields = { priority: boolean; members: boolean; dueDate: boolean; tags: boolean };
 
 export default function TasksPage() {
   // UI State
+  const router = useRouter();
   const [view, setView] = useState<'board' | 'list'>('board');
   const [showFields, setShowFields] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -189,15 +191,16 @@ export default function TasksPage() {
             tasks={processedTasks} 
             onUpdate={loadTasks} 
             visibleFields={visibleFields} 
-            // 🛑 ADD THESE TWO LINES SO THE BOARD CAN EDIT AND DELETE:
-            onEdit={(task) => setEditingTask(task)} 
+            // 2. Change setEditingTask(task) to router.push
+            onEdit={(task) => router.push(`/tasks/${task.id}`)} 
             onDelete={handleDeleteTask} 
           />
         ) : (
           <ListView 
             tasks={processedTasks} 
             visibleFields={visibleFields} 
-            onEdit={(task) => setEditingTask(task)} 
+            // 3. Change setEditingTask(task) to router.push
+            onEdit={(task) => router.push(`/tasks/${task.id}`)} 
             onDelete={handleDeleteTask} 
           />
         )}
