@@ -5,17 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import { api, UserProfile } from '@/lib/api';
 import { Check, Loader2, Pencil, AlertTriangle } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react'; // 🛑 Import NextAuth Session & SignOut
 
 export default function ProfilePage() {
   const router = useRouter();
   const { logout } = useAppStore();
+  const { data: session } = useSession(); // 🛑 Get Google Session
 
   // Data State
   const [profile, setProfile] = useState<UserProfile>({
-    name: '',
-    email: '',
-    title: '',
-    username: '',
+    name: 'Dexter',
+    email: 'dexter@gmail.com',
+    title: 'Designer',
+    username: 'Dexuser',
   });
 
   // UI State
@@ -29,16 +31,22 @@ export default function ProfilePage() {
   useEffect(() => {
     api.getProfile()
       .then(data => {
-        if (data) setProfile(data);
+        if (data) {
+          // 🛑 Merge NextAuth Google data with DB data if logged in
+          setProfile({
+            ...data,
+            name: session?.user?.name || data.name || 'Dexter',
+            email: session?.user?.email || data.email || 'dexter@gmail.com',
+          });
+        }
       })
       .catch(err => console.error("Error loading profile:", err))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [session]);
 
-  // Handle saving profile changes to database
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setEditingField(null); // Close any open inputs
+    setEditingField(null);
     setIsSaving(true);
     setSuccessMessage(false);
     try {
@@ -53,16 +61,15 @@ export default function ProfilePage() {
     }
   };
 
-  // Functional Leave Workspace execution
-  const confirmLeaveWorkspace = () => {
+  // 🛑 Complete Logout (Clears App Store + NextAuth Google Session)
+  const confirmLeaveWorkspace = async () => {
     logout();
+    await signOut({ redirect: false }); // Sign out of Google
     router.push('/login');
   };
 
-  // Reusable Production-Level Editable Field Component
   const renderEditableField = (key: keyof UserProfile, label: string, description?: string, type = 'text') => {
     const isEditing = editingField === key;
-
     return (
       <div className="flex items-center justify-between p-6 border-b border-[#e4e4e7] dark:border-[#27272a] group">
         <div>
@@ -77,8 +84,8 @@ export default function ProfilePage() {
               type={type} 
               value={profile[key]}
               onChange={(e) => setProfile({ ...profile, [key]: e.target.value })}
-              onBlur={() => setEditingField(null)} // Close when clicking outside
-              onKeyDown={(e) => e.key === 'Enter' && setEditingField(null)} // Close on Enter key
+              onBlur={() => setEditingField(null)}
+              onKeyDown={(e) => e.key === 'Enter' && setEditingField(null)}
               className="w-full text-[14px] text-foreground font-medium bg-[#fafafa] dark:bg-[#18181b] border border-primary rounded-lg px-4 py-2 outline-none shadow-sm transition-all"
             />
           ) : (
@@ -106,7 +113,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-[760px] mx-auto p-12 h-full relative">
       
-      {/* 1. IN-APP CUSTOM MODAL FOR LEAVING WORKSPACE */}
+      {/* LEAVE WORKSPACE MODAL */}
       {isLeaveModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white dark:bg-[#09090b] border border-border w-full max-w-sm rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -139,7 +146,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* 2. HEADER */}
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-[28px] font-semibold tracking-tight text-foreground">Profile</h1>
         {successMessage && (
@@ -149,16 +156,22 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* 3. MAIN FORM */}
+      {/* MAIN FORM */}
       <form onSubmit={handleSave}>
         <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] rounded-[16px] shadow-sm mb-10 overflow-hidden">
           
-          {/* Profile Picture (Static) */}
+          {/* Profile Picture (Dynamic Google Auth OR Fallback Initials) */}
           <div className="flex items-center justify-between p-6 border-b border-[#e4e4e7] dark:border-[#27272a]">
             <span className="text-[14px] font-medium text-foreground">Profile picture</span>
-            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center text-[14px] font-bold shadow-sm">
-              {profile.name ? profile.name.charAt(0).toUpperCase() : 'D'}
-            </div>
+            
+            {session?.user?.image ? (
+              <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full border border-border object-cover shadow-sm" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center text-[14px] font-bold shadow-sm">
+                {profile.name ? profile.name.charAt(0).toUpperCase() : 'D'}
+              </div>
+            )}
+
           </div>
 
           {/* Dynamic Editable Fields */}
@@ -181,13 +194,13 @@ export default function ProfilePage() {
         </div>
       </form>
 
-      {/* 4. DANGER ZONE */}
+      {/* DANGER ZONE */}
       <h2 className="text-[16px] font-semibold tracking-tight mb-4 text-foreground">Workspace access</h2>
       <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] rounded-[16px] p-6 flex justify-between items-center shadow-sm">
         <span className="text-[14px] text-muted-foreground font-medium">Remove yourself from the workspace</span>
         <button 
           type="button" 
-          onClick={() => setIsLeaveModalOpen(true)} // Triggers custom modal instead of window.confirm
+          onClick={() => setIsLeaveModalOpen(true)}
           className="text-[#ef4444] bg-[#fef2f2] dark:bg-[#451a1a] dark:text-[#f87171] font-medium px-4 py-2 rounded-lg text-[13px] hover:bg-[#fee2e2] dark:hover:bg-[#7f1d1d] transition-colors border border-transparent dark:border-[#7f1d1d]/50"
         >
           Leave Workspace

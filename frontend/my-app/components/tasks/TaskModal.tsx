@@ -14,7 +14,7 @@ interface TaskModalProps {
 export function TaskModal({ isOpen, onClose, onRefresh, initialData }: TaskModalProps) {
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState('No Priority');
-  const [status, setStatus] = useState('Backlog'); // Default to Backlog
+  const [status, setStatus] = useState('Backlog');
   const [dueDate, setDueDate] = useState('');
   const [tags, setTags] = useState('');
   const [members, setMembers] = useState('');
@@ -73,27 +73,26 @@ export function TaskModal({ isOpen, onClose, onRefresh, initialData }: TaskModal
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] w-full max-w-lg rounded-[24px] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 bg-black/60 dark:bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+      <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         <div className="flex justify-between items-center p-5 border-b border-[#e4e4e7] dark:border-[#27272a] bg-[#fafafa] dark:bg-[#18181b]/50">
           <h2 className="font-semibold text-foreground text-[15px]">
             {initialData ? 'Edit Task' : 'Create New Task'}
           </h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors"><X size={18} /></button>
+          <button onClick={onClose} className="p-1.5 text-muted-foreground hover:bg-[#e4e4e7] dark:hover:bg-[#27272a] rounded-md transition-colors"><X size={18} /></button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-5 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div>
-            <label className="block text-[13px] font-medium text-foreground mb-1.5">Task Title <span className="text-red-500">*</span></label>
-            <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] px-3 py-2 text-[13px] bg-transparent focus:outline-none focus:ring-1 focus:ring-primary transition-all" placeholder="e.g., Design the Homepage" />
+            <label className="block text-[13px] font-semibold text-foreground mb-1.5">Task Title <span className="text-red-500">*</span></label>
+            <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] bg-[#fafafa] dark:bg-[#18181b] rounded-[8px] px-3.5 py-2 text-[13px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all shadow-sm" placeholder="e.g., Design the Homepage" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[13px] font-medium text-foreground mb-1.5">Status</label>
-              <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] px-3 py-2 text-[13px] bg-transparent focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer">
-                {/* 🛑 Added Backlog Option Here */}
+              <label className="block text-[13px] font-semibold text-foreground mb-1.5">Status</label>
+              <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] bg-[#fafafa] dark:bg-[#18181b] rounded-[8px] px-3.5 py-2 text-[13px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer shadow-sm">
                 <option value="Backlog">Backlog</option>
                 <option value="To Do">To Do</option>
                 <option value="Doing">Doing</option>
@@ -102,8 +101,8 @@ export function TaskModal({ isOpen, onClose, onRefresh, initialData }: TaskModal
               </select>
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-foreground mb-1.5">Priority</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] px-3 py-2 text-[13px] bg-transparent focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer">
+              <label className="block text-[13px] font-semibold text-foreground mb-1.5">Priority</label>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] bg-[#fafafa] dark:bg-[#18181b] rounded-[8px] px-3.5 py-2 text-[13px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer shadow-sm">
                 <option value="No Priority">No Priority</option>
                 <option value="Urgent">Urgent</option>
                 <option value="High">High</option>
@@ -115,23 +114,23 @@ export function TaskModal({ isOpen, onClose, onRefresh, initialData }: TaskModal
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[13px] font-medium text-foreground mb-1.5">Due Date</label>
-              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] px-3 py-2 text-[13px] bg-transparent focus:outline-none focus:ring-1 focus:ring-primary dark:[color-scheme:dark]" />
+              <label className="block text-[13px] font-semibold text-foreground mb-1.5">Due Date</label>
+              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] bg-[#fafafa] dark:bg-[#18181b] rounded-[8px] px-3.5 py-2 text-[13px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary dark:[color-scheme:dark] shadow-sm cursor-pointer" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-foreground mb-1.5">Assign Members</label>
-              <input type="text" value={members} onChange={(e) => setMembers(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] px-3 py-2 text-[13px] bg-transparent focus:outline-none focus:ring-1 focus:ring-primary" placeholder="e.g., Dexter, Admin" />
+              <label className="block text-[13px] font-semibold text-foreground mb-1.5">Assign Members</label>
+              <input type="text" value={members} onChange={(e) => setMembers(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] bg-[#fafafa] dark:bg-[#18181b] rounded-[8px] px-3.5 py-2 text-[13px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-sm" placeholder="e.g., Dexter, Admin" />
             </div>
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-foreground mb-1.5">Tags (Comma separated)</label>
-            <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] px-3 py-2 text-[13px] bg-transparent focus:outline-none focus:ring-1 focus:ring-primary" placeholder="e.g., Frontend, Deployment" />
+            <label className="block text-[13px] font-semibold text-foreground mb-1.5">Tags <span className="text-muted-foreground font-normal">(Comma separated)</span></label>
+            <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full border border-[#e4e4e7] dark:border-[#27272a] bg-[#fafafa] dark:bg-[#18181b] rounded-[8px] px-3.5 py-2 text-[13px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-sm" placeholder="e.g., Frontend, Deployment" />
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 mt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-[8px] text-[13px] font-medium hover:bg-muted text-muted-foreground transition-colors">Cancel</button>
-            <button type="submit" disabled={isLoading} className="px-5 py-2 bg-primary text-primary-foreground rounded-[8px] text-[13px] font-medium shadow-sm hover:opacity-90 disabled:opacity-50 transition-opacity">
+          <div className="pt-5 flex justify-end gap-3 border-t border-[#e4e4e7] dark:border-[#27272a] mt-2">
+            <button type="button" onClick={onClose} className="px-4 py-2.5 rounded-[8px] text-[13px] font-semibold hover:bg-muted text-muted-foreground transition-colors">Cancel</button>
+            <button type="submit" disabled={isLoading} className="px-5 py-2.5 bg-primary text-primary-foreground rounded-[8px] text-[13px] font-semibold shadow-sm hover:opacity-90 disabled:opacity-50 transition-opacity">
               {isLoading ? 'Saving...' : (initialData ? 'Save Changes' : 'Create Task')}
             </button>
           </div>

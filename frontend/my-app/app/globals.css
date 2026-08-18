@@ -1,7 +1,6 @@
-/* app/globals.css */
 @import "tailwindcss";
 
-/* 🛑 TAILWIND V4 FIX: Force dark mode to rely ONLY on our toggle button, not the OS */
+/* TAILWIND V4 FIX: Force dark mode to rely ONLY on our toggle button, not the OS */
 @custom-variant dark (&:is(.dark *));
 
 @layer base {
@@ -38,9 +37,11 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 10px;
