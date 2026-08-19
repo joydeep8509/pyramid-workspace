@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import { api, UserProfile } from '@/lib/api';
 import { Check, Loader2, Pencil, AlertTriangle } from 'lucide-react';
-import { useSession, signOut } from 'next-auth/react'; // 🛑 Import NextAuth Session & SignOut
+import { useSession, signOut } from 'next-auth/react'; // NextAuth integration
 
 export default function ProfilePage() {
   const router = useRouter();
   const { logout } = useAppStore();
-  const { data: session } = useSession(); // 🛑 Get Google Session
+  const { data: session } = useSession(); // Get Google Session
 
   // Data State
   const [profile, setProfile] = useState<UserProfile>({
@@ -32,7 +32,7 @@ export default function ProfilePage() {
     api.getProfile()
       .then(data => {
         if (data) {
-          // 🛑 Merge NextAuth Google data with DB data if logged in
+          // Merge NextAuth Google data with DB data if logged in
           setProfile({
             ...data,
             name: session?.user?.name || data.name || 'Dexter',
@@ -61,10 +61,12 @@ export default function ProfilePage() {
     }
   };
 
-  // 🛑 Complete Logout (Clears App Store + NextAuth Google Session)
+  // Complete Logout (Clears App Store + NextAuth Google Session)
   const confirmLeaveWorkspace = async () => {
     logout();
-    await signOut({ redirect: false }); // Sign out of Google
+    if (session) {
+      await signOut({ redirect: false }); // Sign out of Google without auto-refreshing
+    }
     router.push('/login');
   };
 
@@ -82,7 +84,7 @@ export default function ProfilePage() {
             <input 
               autoFocus
               type={type} 
-              value={profile[key]}
+              value={profile[key] || ''}
               onChange={(e) => setProfile({ ...profile, [key]: e.target.value })}
               onBlur={() => setEditingField(null)}
               onKeyDown={(e) => e.key === 'Enter' && setEditingField(null)}
@@ -94,7 +96,7 @@ export default function ProfilePage() {
               <button 
                 type="button"
                 onClick={() => setEditingField(key)}
-                className="text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground transition-all p-1.5 rounded-md hover:bg-white dark:hover:bg-[#27272a] shadow-sm border border-transparent hover:border-border"
+                className="text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground transition-all p-1.5 rounded-md hover:bg-white dark:hover:bg-[#27272a] shadow-sm border border-transparent hover:border-border cursor-pointer"
                 title={`Edit ${label}`}
               >
                 <Pencil size={14} />
@@ -116,7 +118,7 @@ export default function ProfilePage() {
       {/* LEAVE WORKSPACE MODAL */}
       {isLeaveModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#09090b] border border-border w-full max-w-sm rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-6">
               <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center mb-4">
                 <AlertTriangle className="text-red-500" size={24} />
@@ -129,14 +131,14 @@ export default function ProfilePage() {
                 <button 
                   type="button" 
                   onClick={() => setIsLeaveModalOpen(false)}
-                  className="px-4 py-2 rounded-lg text-[13px] font-medium hover:bg-muted text-muted-foreground transition-colors"
+                  className="px-4 py-2 rounded-[8px] text-[13px] font-medium hover:bg-muted text-muted-foreground transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button 
                   type="button" 
                   onClick={confirmLeaveWorkspace}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg text-[13px] font-medium hover:bg-red-600 transition-colors shadow-sm"
+                  className="px-4 py-2 bg-red-500 text-white rounded-[8px] text-[13px] font-medium hover:bg-red-600 transition-colors shadow-sm cursor-pointer"
                 >
                   Yes, Leave Workspace
                 </button>
@@ -160,18 +162,15 @@ export default function ProfilePage() {
       <form onSubmit={handleSave}>
         <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] rounded-[16px] shadow-sm mb-10 overflow-hidden">
           
-          {/* Profile Picture (Dynamic Google Auth OR Fallback Initials) */}
+          {/* 🛑 UPDATED: Profile Picture (Dynamic Google Auth OR Fallback Avatar) */}
           <div className="flex items-center justify-between p-6 border-b border-[#e4e4e7] dark:border-[#27272a]">
             <span className="text-[14px] font-medium text-foreground">Profile picture</span>
             
             {session?.user?.image ? (
-              <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full border border-border object-cover shadow-sm" />
+              <img src={session.user.image} alt="Google Profile" referrerPolicy="no-referrer" className="w-10 h-10 rounded-full border border-border object-cover shadow-sm" />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center text-[14px] font-bold shadow-sm">
-                {profile.name ? profile.name.charAt(0).toUpperCase() : 'D'}
-              </div>
+              <img src="/avatar.png" alt="Guest Avatar" className="w-10 h-10 rounded-full border border-border object-cover bg-gray-200 shadow-sm" />
             )}
-
           </div>
 
           {/* Dynamic Editable Fields */}
@@ -186,7 +185,7 @@ export default function ProfilePage() {
           <button 
             type="submit" 
             disabled={isSaving}
-            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-[14px] font-medium shadow-sm hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center gap-2"
+            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-[14px] font-medium shadow-sm hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center gap-2 cursor-pointer"
           >
             {isSaving && <Loader2 size={16} className="animate-spin" />}
             Save Changes
@@ -201,7 +200,7 @@ export default function ProfilePage() {
         <button 
           type="button" 
           onClick={() => setIsLeaveModalOpen(true)}
-          className="text-[#ef4444] bg-[#fef2f2] dark:bg-[#451a1a] dark:text-[#f87171] font-medium px-4 py-2 rounded-lg text-[13px] hover:bg-[#fee2e2] dark:hover:bg-[#7f1d1d] transition-colors border border-transparent dark:border-[#7f1d1d]/50"
+          className="text-[#ef4444] bg-[#fef2f2] dark:bg-[#451a1a] dark:text-[#f87171] font-medium px-4 py-2 rounded-[8px] text-[13px] hover:bg-[#fee2e2] dark:hover:bg-[#7f1d1d] transition-colors border border-transparent dark:border-[#7f1d1d]/50 cursor-pointer"
         >
           Leave Workspace
         </button>
