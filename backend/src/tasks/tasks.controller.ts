@@ -15,7 +15,6 @@ export class TasksController {
     return this.tasksRepository.find({ order: { createdAt: 'DESC' } });
   }
 
-  // 🛑 ADD THIS NEW ROUTE HERE:
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const task = await this.tasksRepository.findOne({ where: { id } });
