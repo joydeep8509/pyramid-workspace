@@ -14,8 +14,7 @@ interface BoardViewProps {
 
 export function BoardView({ tasks, onUpdate, visibleFields, onEdit, onDelete }: BoardViewProps) {   
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);    
-
-  // Click-outside listener (Fixes menus staying open)   
+  
   useEffect(() => {     
     const handleClickOutside = (e: MouseEvent) => {       
       if (!(e.target as Element).closest('.action-menu-container')) {         
@@ -51,8 +50,7 @@ export function BoardView({ tasks, onUpdate, visibleFields, onEdit, onDelete }: 
             </div>           
           </div>           
           {tasks.filter(t => t.status === col.title).map(task => (             
-            <div key={task.id} className="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] p-[16px] rounded-[12px] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] group hover:shadow-md transition-all duration-200">                              
-              {/* Added 'action-menu-container' for the click-outside logic */}               
+            <div key={task.id} className="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] p-[16px] rounded-[12px] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] group hover:shadow-md transition-all duration-200">                                        
               <div className="flex justify-between items-start mb-3 relative action-menu-container">                 
                 <h3 className="text-[14px] font-semibold leading-snug pr-8 text-foreground">{task.title}</h3>                                  
                 <button                    
