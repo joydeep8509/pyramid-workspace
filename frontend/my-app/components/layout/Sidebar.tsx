@@ -65,7 +65,7 @@ export function Sidebar() {
       {/* Bottom Settings Menu */}       
       <div className="p-2 md:p-3 space-y-1 md:space-y-0.5 mt-auto border-t border-[#e4e4e7] dark:border-[#27272a]">                  
         
-        {/* THEME BUTTON - Forced Arrow (cursor-default) */}         
+        {/* THEME BUTTON  */}         
         <div className="relative settings-popover-container">           
           <button              
             onClick={() => setActiveMenu(activeMenu === 'theme' ? null : 'theme')}              
@@ -92,7 +92,7 @@ export function Sidebar() {
           )}         
         </div>         
         
-        {/* COLOR MODE BUTTON - Forced Arrow (cursor-default) */}         
+        {/* COLOR MODE BUTTON */}         
         <div className="relative settings-popover-container">           
           <button              
             onClick={() => setActiveMenu(activeMenu === 'color' ? null : 'color')}              
