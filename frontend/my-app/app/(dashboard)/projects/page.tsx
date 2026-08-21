@@ -108,7 +108,6 @@ export default function ProjectsPage() {
       <header className="flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-[#e4e4e7] dark:border-[#27272a] bg-white dark:bg-[#09090b] gap-3 md:gap-0 w-full shrink-0">
         <h1 className="text-[20px] font-semibold text-foreground tracking-tight">Projects</h1>
         
-        {/* FIXED: Grouped layout identical to tasks page for perfect mobile wrapping */}
         <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto relative">
           
           <div className="relative group w-full sm:w-auto">
@@ -195,7 +194,6 @@ export default function ProjectsPage() {
       <div className="flex-1 w-full overflow-y-auto overflow-x-hidden bg-[#fafafa] dark:bg-[#09090b]">
         <div className="h-full p-4 md:p-8 pt-4 md:pt-6">
           
-          {/* FIXED: The overflow wrapper is now on the outermost table boundary so borders/background stretch */}
           <div className="w-full overflow-x-auto border border-[#e4e4e7] dark:border-[#27272a] rounded-[12px] bg-white dark:bg-[#18181b] shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]">
             <div className="min-w-[768px] w-full flex flex-col">
               <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-[#e4e4e7] dark:border-[#27272a] text-[12px] font-semibold text-muted-foreground bg-[#fafafa] dark:bg-[#18181b]/50">
