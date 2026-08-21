@@ -42,8 +42,7 @@ export function ProjectModal({ isOpen, onClose, onRefresh, initialData }: Projec
     } catch (error) { console.error("Error", error); } finally { setIsLoading(false); }   
   };   
 
-  return (     
-    // PRO FIX: Smooth backdrop blur and CSS Entry Animations     
+  return (         
     <div className="fixed inset-0 bg-black/60 dark:bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">       
       <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] w-[95%] sm:w-full max-w-md rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">                  
         <div className="flex justify-between items-center p-5 border-b border-[#e4e4e7] dark:border-[#27272a] bg-[#fafafa] dark:bg-[#18181b]/50">           
