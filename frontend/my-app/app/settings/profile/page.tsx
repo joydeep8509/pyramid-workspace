@@ -5,14 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import { api, UserProfile } from '@/lib/api';
 import { Check, Loader2, Pencil, AlertTriangle } from 'lucide-react';
-import { useSession, signOut } from 'next-auth/react'; // NextAuth integration
+import { useSession, signOut } from 'next-auth/react';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { logout } = useAppStore();
-  const { data: session } = useSession(); // Get Google Session
+  const { data: session } = useSession();
 
-  // Data State
   const [profile, setProfile] = useState<UserProfile>({
     name: 'Dexter',
     email: 'dexter@gmail.com',
@@ -20,19 +19,16 @@ export default function ProfilePage() {
     username: 'Dexuser',
   });
 
-  // UI State
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
   const [editingField, setEditingField] = useState<keyof UserProfile | null>(null);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
-  // Fetch profile data from MySQL on mount
   useEffect(() => {
     api.getProfile()
       .then(data => {
         if (data) {
-          // Merge NextAuth Google data with DB data if logged in
           setProfile({
             ...data,
             name: session?.user?.name || data.name || 'Dexter',
@@ -49,6 +45,7 @@ export default function ProfilePage() {
     setEditingField(null);
     setIsSaving(true);
     setSuccessMessage(false);
+
     try {
       const updated = await api.updateProfile(profile);
       setProfile(updated);
@@ -61,11 +58,10 @@ export default function ProfilePage() {
     }
   };
 
-  // Complete Logout (Clears App Store + NextAuth Google Session)
   const confirmLeaveWorkspace = async () => {
     logout();
     if (session) {
-      await signOut({ redirect: false }); // Sign out of Google without auto-refreshing
+      await signOut({ redirect: false });
     }
     router.push('/login');
   };
@@ -73,17 +69,17 @@ export default function ProfilePage() {
   const renderEditableField = (key: keyof UserProfile, label: string, description?: string, type = 'text') => {
     const isEditing = editingField === key;
     return (
-      <div className="flex items-center justify-between p-6 border-b border-[#e4e4e7] dark:border-[#27272a] group">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 border-b border-[#e4e4e7] dark:border-[#27272a] group gap-3 sm:gap-0">
         <div>
           <div className="text-[14px] font-medium text-foreground">{label}</div>
           {description && <div className="text-[12px] text-muted-foreground mt-0.5">{description}</div>}
         </div>
         
-        <div className="w-[320px]">
+        <div className="w-full sm:w-[320px]">
           {isEditing ? (
-            <input 
+            <input
               autoFocus
-              type={type} 
+              type={type}
               value={profile[key] || ''}
               onChange={(e) => setProfile({ ...profile, [key]: e.target.value })}
               onBlur={() => setEditingField(null)}
@@ -93,10 +89,10 @@ export default function ProfilePage() {
           ) : (
             <div className="flex items-center justify-between w-full px-4 py-2 border border-transparent rounded-lg hover:bg-muted/50 transition-colors">
               <span className="text-[14px] font-medium text-foreground truncate">{profile[key]}</span>
-              <button 
+              <button
                 type="button"
                 onClick={() => setEditingField(key)}
-                className="text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground transition-all p-1.5 rounded-md hover:bg-white dark:hover:bg-[#27272a] shadow-sm border border-transparent hover:border-border cursor-pointer"
+                className="text-muted-foreground opacity-100 sm:opacity-0 group-hover:opacity-100 hover:text-foreground transition-all p-1.5 rounded-md hover:bg-white dark:hover:bg-[#27272a] shadow-sm border border-transparent hover:border-border cursor-pointer"
                 title={`Edit ${label}`}
               >
                 <Pencil size={14} />
@@ -113,9 +109,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-[760px] mx-auto p-12 h-full relative">
+    <div className="max-w-[760px] mx-auto p-4 sm:p-8 md:p-12 h-full relative">
       
-      {/* LEAVE WORKSPACE MODAL */}
       {isLeaveModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -128,15 +123,15 @@ export default function ProfilePage() {
                 Are you sure you want to leave this workspace? You will be immediately logged out and lose access to all active projects and tasks.
               </p>
               <div className="flex justify-end gap-3">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsLeaveModalOpen(false)}
                   className="px-4 py-2 rounded-[8px] text-[13px] font-medium hover:bg-muted text-muted-foreground transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={confirmLeaveWorkspace}
                   className="px-4 py-2 bg-red-500 text-white rounded-[8px] text-[13px] font-medium hover:bg-red-600 transition-colors shadow-sm cursor-pointer"
                 >
@@ -148,22 +143,19 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-8">
         <h1 className="text-[28px] font-semibold tracking-tight text-foreground">Profile</h1>
         {successMessage && (
-          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-[13px] font-medium bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-900 animate-in fade-in">
+          <span className="flex items-center w-max gap-1.5 text-emerald-600 dark:text-emerald-400 text-[13px] font-medium bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-900 animate-in fade-in">
             <Check size={14} /> Changes saved successfully!
           </span>
         )}
       </div>
 
-      {/* MAIN FORM */}
       <form onSubmit={handleSave}>
         <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] rounded-[16px] shadow-sm mb-10 overflow-hidden">
           
-          {/* 🛑 UPDATED: Profile Picture (Dynamic Google Auth OR Fallback Avatar) */}
-          <div className="flex items-center justify-between p-6 border-b border-[#e4e4e7] dark:border-[#27272a]">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[#e4e4e7] dark:border-[#27272a]">
             <span className="text-[14px] font-medium text-foreground">Profile picture</span>
             
             {session?.user?.image ? (
@@ -173,19 +165,17 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* Dynamic Editable Fields */}
           {renderEditableField('email', 'Email', undefined, 'email')}
           {renderEditableField('name', 'Full name')}
           {renderEditableField('title', 'Title', 'Your job title or role')}
           {renderEditableField('username', 'Username', 'One word nickname')}
         </div>
 
-        {/* Save Button */}
         <div className="flex justify-end mb-10">
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isSaving}
-            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-[14px] font-medium shadow-sm hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-[14px] font-medium shadow-sm hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center gap-2 cursor-pointer"
           >
             {isSaving && <Loader2 size={16} className="animate-spin" />}
             Save Changes
@@ -193,14 +183,13 @@ export default function ProfilePage() {
         </div>
       </form>
 
-      {/* DANGER ZONE */}
       <h2 className="text-[16px] font-semibold tracking-tight mb-4 text-foreground">Workspace access</h2>
-      <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] rounded-[16px] p-6 flex justify-between items-center shadow-sm">
+      <div className="bg-white dark:bg-[#09090b] border border-[#e4e4e7] dark:border-[#27272a] rounded-[16px] p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4 sm:gap-0 shadow-sm">
         <span className="text-[14px] text-muted-foreground font-medium">Remove yourself from the workspace</span>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={() => setIsLeaveModalOpen(true)}
-          className="text-[#ef4444] bg-[#fef2f2] dark:bg-[#451a1a] dark:text-[#f87171] font-medium px-4 py-2 rounded-[8px] text-[13px] hover:bg-[#fee2e2] dark:hover:bg-[#7f1d1d] transition-colors border border-transparent dark:border-[#7f1d1d]/50 cursor-pointer"
+          className="w-full sm:w-auto text-[#ef4444] bg-[#fef2f2] dark:bg-[#451a1a] dark:text-[#f87171] font-medium px-4 py-2 rounded-[8px] text-[13px] hover:bg-[#fee2e2] dark:hover:bg-[#7f1d1d] transition-colors border border-transparent dark:border-[#7f1d1d]/50 cursor-pointer"
         >
           Leave Workspace
         </button>

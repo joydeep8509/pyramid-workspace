@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, SlidersHorizontal, Filter, Plus, PanelLeftClose, ChevronRight, Check, ListIcon, Columns3 } from 'lucide-react';
+import { Search, SlidersHorizontal, Filter, Plus, PanelLeftClose, ChevronRight, Check } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { api, TaskData, ProjectData } from '@/lib/api';
 import { ListView } from '@/components/tasks/ListView';
@@ -12,17 +12,14 @@ export default function ProjectDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as string;
-
-  // Data State
+  
   const [project, setProject] = useState<ProjectData | null>(null);
   const [tasks, setTasks] = useState<TaskData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // UI State
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskData | null>(null);
   
-  // Fields & Search State
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFields, setShowFields] = useState(false);
@@ -35,7 +32,6 @@ export default function ProjectDetailsPage() {
     loadData();
   }, [projectId]);
 
-  // Click-Outside Listeners for Popovers & Expandable Search
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (fieldsRef.current && !fieldsRef.current.contains(e.target as Node)) {
@@ -52,12 +48,9 @@ export default function ProjectDetailsPage() {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      // Load the specific project to get its name for the breadcrumb
       const allProjects = await api.getProjects();
       const currentProject = allProjects.find(p => p.id.toString() === projectId);
       if (currentProject) setProject(currentProject);
-
-      // Load tasks (In a real app, this would be api.getTasksByProjectId(id))
       setTasks(await api.getTasks());
     } catch (error) {
       console.error("Failed to load project details:", error);
@@ -84,60 +77,55 @@ export default function ProjectDetailsPage() {
       
       <TaskModal isOpen={isModalOpen || !!editingTask} initialData={editingTask} onClose={() => { setIsModalOpen(false); setEditingTask(null); }} onRefresh={loadData} />
 
-      {/* TOP BREADCRUMB HEADER */}
-      <header className="flex items-center gap-3 px-6 py-3.5 border-b border-[#e4e4e7] dark:border-[#27272a] bg-white dark:bg-[#09090b] shrink-0">
-        <button 
-          onClick={() => router.push('/projects')} 
+      <header className="flex items-center gap-3 px-4 sm:px-6 py-3.5 border-b border-[#e4e4e7] dark:border-[#27272a] bg-white dark:bg-[#09090b] shrink-0">
+        <button
+          onClick={() => router.push('/projects')}
           className="p-1.5 text-muted-foreground hover:bg-muted rounded-md transition-colors"
         >
           <PanelLeftClose size={18} />
         </button>
         <div className="w-[1px] h-4 bg-[#e4e4e7] dark:bg-[#27272a] mx-1"></div>
-        <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
-          <button onClick={() => router.push('/projects')} className="hover:text-foreground transition-colors">Projects</button>
-          <ChevronRight size={14} className="opacity-50" />
-          <span className="text-foreground">{project?.name || 'Design Homepage'}</span>
+        <div className="flex flex-wrap items-center gap-2 text-[13px] font-medium text-muted-foreground truncate">
+          <button onClick={() => router.push('/projects')} className="hover:text-foreground transition-colors shrink-0">Projects</button>
+          <ChevronRight size={14} className="opacity-50 shrink-0" />
+          <span className="text-foreground truncate">{project?.name || 'Loading Project...'}</span>
         </div>
       </header>
 
-      {/* MAIN CONTENT AREA */}
-      <div className="flex-1 overflow-y-auto px-8 pt-8 pb-20 bg-white dark:bg-[#09090b]">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-20 bg-white dark:bg-[#09090b]">
         
-        {/* SECONDARY HEADER: "Tasks" Title + Action Buttons */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 sm:gap-0">
           <h1 className="text-[20px] font-semibold text-foreground tracking-tight">Tasks</h1>
           
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
             
-            {/* Expandable Search Button (Matches Screenshot Layout) */}
-            <div className="relative flex items-center" ref={searchRef}>
+            <div className="relative flex items-center w-full sm:w-auto" ref={searchRef}>
               {showSearch ? (
-                <div className="relative animate-in fade-in slide-in-from-right-4 duration-200">
+                <div className="relative animate-in fade-in slide-in-from-right-4 duration-200 w-full sm:w-auto">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input 
+                  <input
                     autoFocus
-                    type="text" 
+                    type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search tasks..." 
-                    className="pl-8 pr-4 py-1.5 border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] bg-white dark:bg-[#09090b] text-[13px] font-medium focus:outline-none focus:ring-1 focus:ring-primary w-[200px] shadow-[0_1px_2px_0_rgba(0,0,0,0.02)] transition-all"
+                    placeholder="Search tasks..."
+                    className="pl-8 pr-4 py-1.5 border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] bg-white dark:bg-[#09090b] text-[13px] font-medium focus:outline-none focus:ring-1 focus:ring-primary w-full sm:w-[200px] shadow-[0_1px_2px_0_rgba(0,0,0,0.02)] transition-all"
                   />
                 </div>
               ) : (
-                <button 
-                  onClick={() => setShowSearch(true)} 
-                  className="p-1.5 border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] bg-white dark:bg-[#09090b] text-muted-foreground hover:bg-muted transition-colors shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]"
+                <button
+                  onClick={() => setShowSearch(true)}
+                  className="p-1.5 border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] bg-white dark:bg-[#09090b] text-muted-foreground hover:bg-muted transition-colors shadow-[0_1px_2px_0_rgba(0,0,0,0.02)] hidden sm:block"
                 >
                   <Search size={16} />
                 </button>
               )}
             </div>
 
-            {/* Dynamic Fields Dropdown */}
-            <div className="relative" ref={fieldsRef}>
-              <button 
-                onClick={() => setShowFields(!showFields)} 
-                className="flex items-center gap-2 px-3 py-1.5 border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] text-[13px] font-medium hover:bg-muted transition-colors shadow-[0_1px_2px_0_rgba(0,0,0,0.02)] text-foreground bg-white dark:bg-[#09090b]"
+            <div className="relative flex-1 sm:flex-none" ref={fieldsRef}>
+              <button
+                onClick={() => setShowFields(!showFields)}
+                className="flex w-full sm:w-auto justify-center items-center gap-2 px-3 py-1.5 border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] text-[13px] font-medium hover:bg-muted transition-colors shadow-[0_1px_2px_0_rgba(0,0,0,0.02)] text-foreground bg-white dark:bg-[#09090b]"
               >
                 <SlidersHorizontal size={14} /> Fields
               </button>
@@ -159,22 +147,19 @@ export default function ProjectDetailsPage() {
               )}
             </div>
 
-            {/* Filter Button */}
             <button className="p-1.5 border border-[#e4e4e7] dark:border-[#27272a] rounded-[8px] bg-white dark:bg-[#09090b] text-muted-foreground hover:bg-muted transition-colors shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]">
               <Filter size={16} />
             </button>
             
-            {/* Create Task Action */}
-            <button 
-              onClick={() => setIsModalOpen(true)} 
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#09090b] dark:bg-white text-white dark:text-black rounded-[8px] text-[13px] font-medium shadow-sm hover:opacity-90 transition-opacity"
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex flex-1 sm:flex-none justify-center items-center gap-1.5 px-3 py-1.5 bg-[#09090b] dark:bg-white text-white dark:text-black rounded-[8px] text-[13px] font-medium shadow-sm hover:opacity-90 transition-opacity"
             >
               <Plus size={16} /> Add Task
             </button>
           </div>
         </div>
 
-        {/* LIST VIEW RENDER */}
         {isLoading ? (
           <div className="flex h-64 items-center justify-center text-muted-foreground text-[14px]">Loading project tasks...</div>
         ) : processedTasks.length === 0 ? (

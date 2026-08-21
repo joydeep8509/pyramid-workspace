@@ -15,12 +15,12 @@ import { UsersModule } from './users/users.module';
         type: 'mysql',
         driver: require('mysql2'),
 
-        // Inside app.module.ts useFactory:
-        host: configService.get<string>('DB_HOST'),
+        host:'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
         port: 4000,
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
+        username: '2e21CX2ZNcuBZrQ.root',
+        password: 'nMuep6FK3xjh115Y',
         database: 'test',
+        // Inside app.module.ts useFactory:
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true, // Note: Set to false in production deployment
 
