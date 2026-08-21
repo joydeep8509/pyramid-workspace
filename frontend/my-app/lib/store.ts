@@ -37,7 +37,6 @@ export const useAppStore = create<AppState>()(
       logout: () => set({ isAuthenticated: false }),
     }),
     { 
-      // Renamed the storage key to force a clean cache reset
       name: 'dexter-full-storage' 
     }
   )
