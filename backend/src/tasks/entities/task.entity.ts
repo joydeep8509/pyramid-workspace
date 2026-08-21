@@ -1,4 +1,3 @@
-// backend/src/tasks/entities/task.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('tasks')
