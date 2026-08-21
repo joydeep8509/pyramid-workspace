@@ -15,20 +15,18 @@ import { UsersModule } from './users/users.module';
         type: 'mysql',
         driver: require('mysql2'),
 
-        host:'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+        host: configService.get<string>('DB_HOST'),
         port: 4000,
-        username: '2e21CX2ZNcuBZrQ.root',
-        password: 'nMuep6FK3xjh115Y',
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
         database: 'test',
-        // Inside app.module.ts useFactory:
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // Note: Set to false in production deployment
+        synchronize: true,
 
         ssl: {
           minVersion: 'TLSv1.2',
           rejectUnauthorized: true,
         },
-        // 🛑 2. Extra config pushes it directly into the mysql2 connection pool
         extra: {
           ssl: {
             minVersion: 'TLSv1.2',
@@ -37,7 +35,7 @@ import { UsersModule } from './users/users.module';
         },
       }),
     }),
-    TasksModule, // Add the TasksModule to the main imports array
+    TasksModule,
     ProjectsModule,
     UsersModule,
   ],
