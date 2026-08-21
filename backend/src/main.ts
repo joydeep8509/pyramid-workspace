@@ -6,7 +6,6 @@ async function bootstrap() {
   
   app.setGlobalPrefix('api');
   
-  // 🛑 FIX: Explicitly allow ALL methods and origins so Next.js is never blocked
   app.enableCors({
     origin: ['https://pyramid-workspace.vercel.app', 'http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
