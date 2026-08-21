@@ -177,7 +177,7 @@ export default function TaskDetailPage() {
           </div>
 
           <p className="text-[14px] text-muted-foreground mb-10 leading-relaxed max-w-3xl">
-            Create clear and detailed API documentation to guide developers in using the inventory and sales metrics features effectively.
+            Create clear and detailed API documentation to guide developers in using the inventory and sales metrics features effectively.((Hover over the text for editing))
           </p>
 
           <div className="space-y-4 mb-10 text-[13px]">
