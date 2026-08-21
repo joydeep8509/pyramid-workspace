@@ -1,4 +1,3 @@
-// backend/src/users/users.controller.ts
 import { Controller, Get, Patch, Body, Param, ParseIntPipe, Delete } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,9 +10,6 @@ export class UsersController {
     private usersRepository: Repository<User>,
   ) {}
 
-  // ==========================================
-  // 1. STATIC ROUTES (Must come first)
-  // ==========================================
 
   @Get('profile')
   async getProfile() {
@@ -45,9 +41,6 @@ export class UsersController {
     return this.usersRepository.save(user);
   }
 
-  // ==========================================
-  // 2. DYNAMIC ROUTES (Must come last)
-  // ==========================================
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
